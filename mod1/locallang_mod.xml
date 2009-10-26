@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;web_txjgclubmanagerM1&quot; - header, description</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="mlang_tabs_tab">Club Manager</label>
+			<label index="mlang_labels_tabdescr">Club manager module description</label>
+			<label index="mlang_labels_tablabel">BE short descr</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="mlang_tabs_tab">Verein Manager</label>
+			<label index="mlang_labels_tabdescr">Verein Manager desce</label>
+			<label index="mlang_labels_tablabel">BE Kurzbeschreibung</label>
+		</languageKey>
+	</data>
+</T3locallang>
