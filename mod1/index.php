@@ -161,12 +161,29 @@ class  tx_jgclubmanager_module1 extends t3lib_SCbase {
 							$content='<div align="center"><strong>Hello World!</strong></div><br />
 								The "Kickstarter" has made this module automatically, it contains a default framework for a backend module but apart from that it does nothing useful until you open the script '.substr(t3lib_extMgm::extPath('jg_clubmanager'),strlen(PATH_site)).'mod1/index.php and edit it!
 								<hr />
-								<br />This is the GET/POST vars sent to the script:<br />'.
+								<p><b>Test</b>';
+							foreach ($this->getGroupMembers(8,'username') as $member)
+							{
+  			       $user = t3lib_BEfunc::getRecord('fe_users', $member, '*');
+               $icon = t3lib_iconWorks::getIconImage('fe_users', $user, $GLOBALS['BACK_PATH'], 'alt="uid: '.$user['uid'].'" title="uid: '.$user['uid'].'"');
+							$actions = '';
+               if($GLOBALS['BE_USER']->isAdmin()) {
+                    $altText = 'Edit';
+                	$actions.= '<a href="#" onclick="'.t3lib_BEfunc::editOnClick('&edit[fe_users]['.$user['uid'].']=edit', $BACK_PATH).'">';
+                	$actions.= '<img'.t3lib_iconWorks::skinImg($GLOBALS['$BACK_PATH'], 'gfx/edit2.gif').'alt="'.$altText.'" title="'.$altText.'" /></a>';
+                }
+               
+               
+               $table[] = array ($icon, $user['username'],$actions);               
+   						}
+							$content.='<b>Test</b></p>
+								<br />This is the GET/POST ss vars sent to the script:<br />'.
 								'GET:'.t3lib_div::view_array($_GET).'<br />'.
 								'POST:'.t3lib_div::view_array($_POST).'<br />'.
 								'';
 							$this->content .= '<p>Test1: '.$LANG->getLL('','Kleiner Test')."</p>";
 							$this->content.=$this->doc->section('Message #1:',$content,0,1);
+							$this->content.=$this->doc->section('User:',$this->doc->table($table),0,1);
 						break;
 						case 2:
 							$content='<div align=center><strong>Menu item #2...</strong></div>';
@@ -207,10 +224,99 @@ class  tx_jgclubmanager_module1 extends t3lib_SCbase {
 					return $buttons;
 				}
 				
-		}
 
 
+		 /**
+     * Returns an array of fe/beusers uid's for the specified group.
+     *
+     * @param integer $groupId: fe/be_groups uid
+     * @return array
+     */
+	   function getGroupMembers($groupId,$orderby) {
+	     #  $dbResult = $TYPO3_DB->sql_query("SELECT uid, usergroup FROM ".fe_users WHERE deleted=0");
+	    
+	    $query = $GLOBALS['TYPO3_DB']->SELECTquery(
+                'uid, usergroup',         // SELECT ...
+                'fe_users',     // FROM ...
+                'deleted=0',    // WHERE...
+                '',            // GROUP BY...
+                $orderby,    // ORDER BY...
+                ''            // LIMIT ...
 
+            );
+      $dbResult = $GLOBALS['TYPO3_DB']->sql(TYPO3_db, $query);  
+	    if($dbResult) {
+	        if($GLOBALS['TYPO3_DB']->sql_num_rows($dbResult)==0) {
+	            return false;
+	        }
+	        else {
+
+	            while(list($uid, $usergroup) = $GLOBALS['TYPO3_DB']->sql_fetch_row($dbResult)) {
+    	            if($this->searchCSL($groupId,$usergroup)) {
+    	                $members[] = $uid;
+    	            }
+	            }
+
+	            return $members;
+	        }
+	    }
+	    else {
+	        $TYPO3_DB->debug('sql_query');
+	    }
+	}
+
+
+		/**
+	 * Removes a user from the specified fe_group
+	 *
+	 * @param integer $groupId: fe_groups uid
+	 * @param integer $userId: fe_users uid
+	 * @return boolean true on success false on failure
+	 */
+	 function DeleteMembership($userId) {
+        
+      $membergroups = array (8);
+	    $group = t3lib_BEfunc::getRecord('fe_groups', intval($groupId));
+// TODO continue //
+	    if($this->allowedToMngGroup($group)) {
+	        $user = t3lib_BEfunc::getRecord('fe_users', $userId);
+	        $usergroups = t3lib_div::trimExplode(',', $user['usergroup']);
+
+	        foreach($usergroups as $group) if($group!=$groupId)    $array[] = $group;
+	        $usergroups = (is_array($array)) ? implode(',', $array) : '';
+
+            $dbResult = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users',
+                                                    "uid='".intval($userId)."'",
+                                                    array('usergroup' => $usergroups));
+
+            if($dbResult) {
+                return $user['username'];
+            }
+            else {
+                $GLOBALS['$TYPO3_DB']->debug('exec_UPDATEquery');
+            }
+	    }
+	    else {
+	        return false;
+	    }
+	}
+	function searchCSL ($item, $list)	{
+	
+    		
+    		$list = split(',', $list);
+		
+		if (in_array ($item, $list)) {
+     return true;
+    } 
+   return false;
+	}
+	
+
+	
+	
+	
+			}
+	
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/jg_clubmanager/mod1/index.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/jg_clubmanager/mod1/index.php']);
 }
