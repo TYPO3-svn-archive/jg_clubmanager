@@ -275,15 +275,21 @@ class  tx_jgclubmanager_module1 extends t3lib_SCbase {
 	 */
 	 function DeleteMembership($userId) {
         
-      $membergroups = array (8);
-	    $group = t3lib_BEfunc::getRecord('fe_groups', intval($groupId));
-// TODO continue //
-	    if($this->allowedToMngGroup($group)) {
-	        $user = t3lib_BEfunc::getRecord('fe_users', $userId);
-	        $usergroups = t3lib_div::trimExplode(',', $user['usergroup']);
+      $membergroups = array (8,6,11);
+     #$group = t3lib_BEfunc::getRecord('fe_groups', intval($groupId));
 
-	        foreach($usergroups as $group) if($group!=$groupId)    $array[] = $group;
-	        $usergroups = (is_array($array)) ? implode(',', $array) : '';
+	    
+	    $user = t3lib_BEfunc::getRecord('fe_users', $userId);
+	    $usergroups = t3lib_div::trimExplode(',', $user['usergroup']);
+
+	    foreach ($membergroups as $delete)
+	    {
+	    	in_array ($delete, $usergroups) ? true : array_splice ($usergroups, array_search ($delete, $usergroups),1);
+      }
+ // TODO continue //     
+#	    foreach($usergroups as $group) if($group!=$groupId)    $array[] = $group;
+
+#	    $usergroups = (is_array($array)) ? implode(',', $array) : '';
 
             $dbResult = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users',
                                                     "uid='".intval($userId)."'",
@@ -295,10 +301,7 @@ class  tx_jgclubmanager_module1 extends t3lib_SCbase {
             else {
                 $GLOBALS['$TYPO3_DB']->debug('exec_UPDATEquery');
             }
-	    }
-	    else {
-	        return false;
-	    }
+	  
 	}
 	function searchCSL ($item, $list)	{
 	
