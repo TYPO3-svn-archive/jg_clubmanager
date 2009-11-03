@@ -162,7 +162,7 @@ class  tx_jgclubmanager_module1 extends t3lib_SCbase {
 								The "Kickstarter" has made this module automatically, it contains a default framework for a backend module but apart from that it does nothing useful until you open the script '.substr(t3lib_extMgm::extPath('jg_clubmanager'),strlen(PATH_site)).'mod1/index.php and edit it!
 								<hr />
 								<p><b>Test</b>';
-							foreach ($this->getGroupMembers(8,'username') as $member)
+							foreach ($this->getGroupMembers(6,'username') as $member)
 							{
   			       $user = t3lib_BEfunc::getRecord('fe_users', $member, '*');
                $icon = t3lib_iconWorks::getIconImage('fe_users', $user, $GLOBALS['BACK_PATH'], 'alt="uid: '.$user['uid'].'" title="uid: '.$user['uid'].'"');
